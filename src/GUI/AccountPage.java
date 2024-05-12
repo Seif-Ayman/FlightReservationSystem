@@ -574,7 +574,7 @@ public class AccountPage extends JFrame {
             String oldUser = currentUser.toString();
             if (currentUser.getPassword().equals(String.valueOf
                     (validatePasswordField.getPassword())) &&
-                    RegisterControl.ValidateUsername(ChangeUsernameField.getText())) {
+                    RegisterControl.ValidateUsername(ChangeUsernameField.getText()) && ! RegisterControl.isUsernameStored(ChangeUsernameField.getText())) {
                 usernameError.setVisible(false);
                 currentUser.setUsername(ChangeUsernameField.getText());
                 removeToken();

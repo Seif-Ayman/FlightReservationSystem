@@ -6,6 +6,7 @@ import Utils.FileManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.*;
 
 public class TicketsPage extends JFrame {
     JFrame frame = new JFrame ("Your Tickets");
@@ -20,11 +21,43 @@ public class TicketsPage extends JFrame {
         String[] ticketIDs = FileManager.GetEveryTicketIDGivenUsername(HomePage.currentUser.getUsername());
         Ticket[] tickets = FileManager.GetEveryTicketGivenUsername ( HomePage.currentUser.getUsername () );
         JButton[] buttons = new JButton[ticketIDs.length];
+        int gap = 220;
+        for (int i=0 ; i < ticketIDs.length; i++) {
+            JButton deleteButton = new JButton("Delete Ticket " + (i + 1));
+            deleteButton.setBounds ( 20,gap,340,60 );
+            deleteButton.setFont(new Font("Arial", Font.BOLD, 18));
+            deleteButton.setForeground ( Color.white );
+            deleteButton.setBackground ( Color.decode ( "#DE3341" ) );
+            deleteButton.setBorder ( BorderFactory.createEmptyBorder () );
+
+            buttons[i] = new JButton("Ticket " + (i + 1));
+            buttons[i].setBounds ( 20,gap,340,60 );
+            buttons[i].setFont(new Font("Arial", Font.BOLD, 18));
+            buttons[i].setForeground ( Color.white );
+            buttons[i].setBackground ( Color.decode ( "#DE3341" ) );
+            buttons[i].setBorder ( BorderFactory.createEmptyBorder () );
+
+            panel.add(deleteButton);
+
+            Ticket ticket = tickets[i];
+
+            buttons[i].addActionListener(e -> {
+                new TicketGUI (ticket);
+            });
+
+            deleteButton.addActionListener(e -> {
+                deleteTicket(ticket.getTicketID());
+            });
+
+            gap+=80;
+
+        }
+
         frame.setSize(400, 550);
         frame.setBackground( Color.decode("#FFFFFF"));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setIconImage(logo.getImage());
-        frame.setResizable(false);
+        frame.setResizable(true);
         frame.setLocationRelativeTo(null);
         panel.add(subHeading);
         panel.add ( heading );
@@ -41,7 +74,6 @@ public class TicketsPage extends JFrame {
         heading.setFont ( new Font ( "SansSerif", Font.BOLD,50 ) );
         heading.setForeground ( Color.decode ( "#0B3E91" ) );
 
-        int gap = 220;
         for (int i=0 ; i < ticketIDs.length; i++){
             buttons[i] = new JButton("Ticket " + (i + 1));
             buttons[i].setBounds ( 20,gap,340,60 );
@@ -92,6 +124,39 @@ public class TicketsPage extends JFrame {
         subHeading.setForeground ( Color.decode ( "#FD9426" ) );
         heading.setForeground ( Color.decode ( "#0B3E91" ) );
         ThemeManager.setDarkMode ( false );
+    }
+
+    private void deleteTicket(String ticketID) {
+        File inputFile = new File("tickets/" + HomePage.currentUser.getUsername() + "Tickets.txt");
+        File tempFile = new File("tickets/TempTickets.txt");
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+
+            String currentLine;
+
+            while((currentLine = reader.readLine()) != null) {
+                String trimmedLine = currentLine.trim();
+                if(trimmedLine.startsWith(ticketID)) continue;
+                writer.write(currentLine + System.getProperty("line.separator"));
+            }
+            writer.close();
+            reader.close();
+
+            // Delete the original file before renaming the temporary file
+            if (!inputFile.delete()) {
+                System.out.println("Failed to delete the original file.");
+                return;
+            }
+
+            boolean successful = tempFile.renameTo(inputFile);
+            System.out.println(successful ? "Ticket deleted successfully" : "Ticket deletion failed");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
 
