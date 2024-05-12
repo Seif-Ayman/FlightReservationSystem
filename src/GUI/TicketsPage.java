@@ -29,28 +29,21 @@ public class TicketsPage extends JFrame {
             deleteButton.setForeground ( Color.white );
             deleteButton.setBackground ( Color.decode ( "#DE3341" ) );
             deleteButton.setBorder ( BorderFactory.createEmptyBorder () );
-
             buttons[i] = new JButton("Ticket " + (i + 1));
             buttons[i].setBounds ( 20,gap,340,60 );
             buttons[i].setFont(new Font("Arial", Font.BOLD, 18));
             buttons[i].setForeground ( Color.white );
             buttons[i].setBackground ( Color.decode ( "#DE3341" ) );
             buttons[i].setBorder ( BorderFactory.createEmptyBorder () );
-
             panel.add(deleteButton);
-
             Ticket ticket = tickets[i];
-
             buttons[i].addActionListener(e -> {
                 new TicketGUI (ticket);
             });
-
             deleteButton.addActionListener(e -> {
                 deleteTicket(ticket.getTicketID());
             });
-
             gap+=80;
-
         }
 
         frame.setSize(400, 550);
